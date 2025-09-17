@@ -1,3 +1,27 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+/* MushroomManager_app.css_v1 – erstellt am 2025-09-17 16:01 */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg-primary text-text-primary antialiased;
+  }
+
+  h1 {
+    @apply text-3xl font-bold tracking-tight text-text-primary;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight text-text-primary;
+  }
+
+  h3 {
+    @apply text-xl font-semibold text-text-primary;
+  }
+
+  p {
+    @apply text-base text-text-secondary;
+  }
+}
