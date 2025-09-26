@@ -1,6 +1,7 @@
 <script>
   import Card from '$lib/components/Card.svelte';
   import Button from '$lib/components/Button.svelte';
+  import { goto } from '$app/navigation';
   export let data;
 </script>
 
@@ -32,8 +33,20 @@
         </div>
         
         <div class="mt-6 pt-4 border-t border-outline flex items-center gap-2">
-          <Button variant="primary">Details</Button>
-          <Button variant="secondary">Bearbeiten</Button>
+          <Button
+            variant="primary"
+            type="button"
+            on:click={() => goto(`/protocol/${protocol.id}`)}
+          >
+            Details
+          </Button>
+          <Button
+            variant="secondary"
+            type="button"
+            on:click={() => goto(`/protocol/${protocol.id}/edit`)}
+          >
+            Bearbeiten
+          </Button>
         </div>
         
       </div>
