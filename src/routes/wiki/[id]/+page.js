@@ -16,6 +16,14 @@ export async function load({ params }) {
   }
 
   return {
-    wikiEntry: data
+    wikiEntry: data,
+    form: {
+      values: {
+        title: data.title ?? '',
+        category: data.category ?? '',
+        content: data.content ?? ''
+      },
+      errors: {}
+    }
   };
 }
