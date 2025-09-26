@@ -1,86 +1,46 @@
 <script>
-  import { supabase } from '$lib/supabaseClient';
-  import { goto } from '$app/navigation';
-
   /** @type {import('./$types').PageData} */
   export let data;
-  let { protocol } = data;
+  const { protocol } = data;
 
-  async function updateProtocol() {
-    // Erstellt ein sauberes Objekt für das Update, um Syntaxfehler zu vermeiden.
-    const updatedData = {
-      strain_name: protocol.strain_name,
-      start_date: protocol.start_date,
-      status: protocol.status,
-      notes: protocol.notes
-    };
-
-    const { error } = await supabase
-      .from('protocols')
-      .update(updatedData)
-      .eq('id', protocol.id); 
-
-    if (error) {
-      alert('Fehler beim Speichern: ' + error.message);
-    } else {
-      await goto('/protocol');
-    }
+  let formattedDate = '—';
+  if (protocol.start_date) {
+    const parsedDate = new Date(protocol.start_date);
+    formattedDate = Number.isNaN(parsedDate.getTime())
+      ? protocol.start_date
+      : parsedDate.toLocaleDateString();
   }
 </script>
 
-<h1 class="text-3xl font-bold mb-6">Protokoll bearbeiten: {protocol.strain_name}</h1>
+<h1 class="text-3xl font-bold mb-6">Protokoll: {protocol.strain_name}</h1>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-  <form on:submit|preventDefault={updateProtocol}>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-6">
+  <section>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Übersicht</h2>
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
       <div>
-        <label for="strain_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pilzart</label>
-        <input 
-          id="strain_name"
-          bind:value={protocol.strain_name}
-          type="text" 
-          class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-          required
-        />
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+        <dd class="mt-1 text-base text-gray-900 dark:text-gray-100">{protocol.status}</dd>
       </div>
-
       <div>
-        <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Startdatum</label>
-        <input 
-          id="start_date"
-          bind:value={protocol.start_date}
-          type="date"
-          class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-          required
-        />
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Startdatum</dt>
+        <dd class="mt-1 text-base text-gray-900 dark:text-gray-100">{formattedDate}</dd>
       </div>
-    </div>
+      <div class="md:col-span-2">
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Notizen</dt>
+        <dd class="mt-1 text-base text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+          {protocol.notes || 'Keine Notizen vorhanden.'}
+        </dd>
+      </div>
+    </dl>
+  </section>
 
-    <div class="mt-4">
-      <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-      <input 
-        id="status"
-        bind:value={protocol.status}
-        type="text" 
-        class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-        required
-      />
-    </div>
-
-    <div class="mt-4">
-      <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notizen</label>
-      <textarea 
-        id="notes"
-        bind:value={protocol.notes}
-        class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-        rows="4"
-      ></textarea>
-    </div>
-
-    <div class="flex justify-end mt-6">
-      <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg">
-        Änderungen speichern
-      </button>
-    </div>
-  </form>
+  <div class="flex justify-end">
+    <a
+      href="./edit"
+      class="inline-flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg"
+    >
+      Protokoll bearbeiten
+    </a>
+  </div>
 </div>
