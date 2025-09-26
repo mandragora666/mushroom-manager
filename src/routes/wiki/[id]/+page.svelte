@@ -1,74 +1,87 @@
 <script>
-  import { supabase } from '$lib/supabaseClient';
-  import { goto } from '$app/navigation';
+  import Input from '$lib/components/Input.svelte';
+  import Textarea from '$lib/components/Textarea.svelte';
+  import Button from '$lib/components/Button.svelte';
+  import Card from '$lib/components/Card.svelte';
 
   /** @type {import('./$types').PageData} */
   export let data;
+  /** @type {import('./$types').ActionData} */
+  export let form;
 
-  let { wikiEntry } = data;
+  const { wikiEntry } = data;
 
-  // NEU: Funktion zum Aktualisieren des Eintrags
-  async function updateWikiEntry() {
-    const updatedData = {
-      title: wikiEntry.title,
-      category: wikiEntry.category,
-      content: wikiEntry.content
-    };
-
-    const { error } = await supabase
-      .from('wiki_entries')
-      .update(updatedData)
-      .eq('id', wikiEntry.id);
-
-    if (error) {
-      alert('Fehler beim Speichern: ' + error.message);
-    } else {
-      // Bei Erfolg zurück zur Wiki-Übersicht
-      await goto('/wiki');
-    }
-  }
+  $: effectiveForm = form ?? data.form;
+  $: titleValue = effectiveForm?.values?.title ?? '';
+  $: categoryValue = effectiveForm?.values?.category ?? '';
+  $: contentValue = effectiveForm?.values?.content ?? '';
+  $: fieldErrors = effectiveForm?.errors ?? {};
 </script>
 
-<h1 class="text-3xl font-bold mb-6">Wiki-Eintrag bearbeiten</h1>
+<div class="max-w-3xl mx-auto">
+  <a href="/wiki" class="text-sm text-text-secondary hover:text-text-primary mb-6 inline-block">
+    &larr; Zurück zur Wiki-Übersicht
+  </a>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-  <form on:submit|preventDefault={updateWikiEntry}>
-    <div>
-      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel</label>
-      <input 
-        id="title"
-        bind:value={wikiEntry.title}
-        type="text" 
-        class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-        required
-      />
-    </div>
+  <Card>
+    <div class="p-2">
+      <h1 class="text-2xl">Wiki-Eintrag bearbeiten</h1>
+      <p class="mt-1">Aktualisieren Sie die Details dieses Eintrags.</p>
 
-    <div class="mt-4">
-      <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategorie</label>
-      <input 
-        id="category"
-        bind:value={wikiEntry.category}
-        type="text"
-        class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-        required
-      />
-    </div>
+      <form method="POST" class="mt-8 space-y-6">
+        <div>
+          <Input
+            id="title"
+            name="title"
+            label="Titel"
+            value={titleValue}
+            required={true}
+          />
+          {#if fieldErrors.title}
+            <p class="mt-2 text-sm text-red-500">{fieldErrors.title}</p>
+          {/if}
+        </div>
 
-    <div class="mt-4">
-      <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Inhalt</label>
-      <textarea 
-        id="content"
-        bind:value={wikiEntry.content}
-        class="input mt-1 bg-gray-100 dark:bg-gray-700 p-2 rounded w-full"
-        rows="6"
-      ></textarea>
-    </div>
+        <div>
+          <Input
+            id="category"
+            name="category"
+            label="Kategorie"
+            value={categoryValue}
+            required={true}
+          />
+          {#if fieldErrors.category}
+            <p class="mt-2 text-sm text-red-500">{fieldErrors.category}</p>
+          {/if}
+        </div>
 
-    <div class="flex justify-end mt-6">
-      <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg">
-        Änderungen speichern
-      </button>
+        <div>
+          <Textarea
+            id="content"
+            name="content"
+            label="Inhalt"
+            rows={8}
+            value={contentValue}
+            required={true}
+          />
+          {#if fieldErrors.content}
+            <p class="mt-2 text-sm text-red-500">{fieldErrors.content}</p>
+          {/if}
+        </div>
+
+        {#if effectiveForm?.message}
+          <div class="bg-red-900/50 border border-red-500 text-red-200 text-sm rounded-md p-4" role="alert">
+            <p><strong>Fehler:</strong> {effectiveForm.message}</p>
+          </div>
+        {/if}
+
+        <div class="flex justify-end gap-4 pt-4 border-t border-border-primary">
+          <a href="/wiki">
+            <Button type="button" variant="secondary">Abbrechen</Button>
+          </a>
+          <Button type="submit" variant="primary">Änderungen speichern</Button>
+        </div>
+      </form>
     </div>
-  </form>
+  </Card>
 </div>
