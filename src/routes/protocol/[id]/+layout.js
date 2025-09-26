@@ -1,9 +1,9 @@
-// src/routes/protocol/[id]/+page.js
+// src/routes/protocol/[id]/+layout.js
 
 import { supabase } from '$lib/supabaseClient';
 import { error } from '@sveltejs/kit';
 
-/** @type {import('./$types').PageLoad} */
+/** @type {import('./$types').LayoutLoad} */
 export async function load({ params }) {
   const { data, error: dbError } = await supabase
     .from('protocols')
